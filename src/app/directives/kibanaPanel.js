@@ -49,11 +49,7 @@ function (angular) {
               'bs-tooltip="task.description" ng-class="task.icon" class="pointer"></i></span>'+
           '</span>' +
 
-        '<span class="row-button extra" ng-show="panel.fitboundsAuto != undefined && !panel.fitboundsAuto">' +
-        '<a ng-click="fitbounds(\'hello\')"><i tooltip="\'fit bound\'" class="pointer icon-fire"></i>'+
-        '</a></span>' +  // bettermap fitbound action
-
-        '<span class="dropdown row-button extra" bs-tooltip="\'Export\'" data-placement="bottom" ng-show="panelMeta.exportfile">' +
+          '<span class="dropdown row-button extra" bs-tooltip="\'Export\'" data-placement="bottom" ng-show="panelMeta.exportfile">' +
             '<span class="pointer" class="dropdown-toggle" data-toggle="dropdown">' +
                 '<i class="icon-save" class="pointer"></i>' +
             '</span>' +
