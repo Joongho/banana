@@ -28,6 +28,9 @@ function (angular, app, _, L, localRequire) {
   var module = angular.module('kibana.panels.bettermap', []);
   app.useModule(module);
 
+  // flag for done fitbounds or not
+  var  fitboundsFlag = true;
+
   module.controller('bettermap', function($scope, querySrv, dashboard, filterSrv) {
     $scope.panelMeta = {
       modals : [
@@ -65,6 +68,7 @@ function (angular, app, _, L, localRequire) {
 //      tooltip : "_id",
       field   : null,
       show_queries:true,
+      fitboundsAuto : true,
     };
 
     _.defaults($scope.panel, _d);
@@ -89,6 +93,11 @@ function (angular, app, _, L, localRequire) {
         $scope.get_data();
       }
       $scope.refresh =  false;
+    };
+
+    $scope.fitbounds = function (msg) {
+      fitboundsFlag = true;
+      $scope.$emit('draw');
     };
 
     $scope.get_data = function(segment,query_id) {
@@ -187,7 +196,13 @@ function (angular, app, _, L, localRequire) {
           if($scope.query_id === query_id) {
             // Keep only what we need for the set
             $scope.data = $scope.data.slice(0,$scope.panel.size).concat(_.map(results.response.docs, function(hit) {
-              var latlon = hit[$scope.panel.field].split(',');
+              var latlon;
+              if (hit[$scope.panel.field]) {
+                latlon = hit[$scope.panel.field].split(',');
+              } else {
+                latlon = [$scope.panel.lat_empty, $scope.panel.lon_empty];
+              }
+
               return {
                 coordinates : new L.LatLng(latlon[0],latlon[1]),
                 tooltip : hit[$scope.panel.tooltip]
@@ -271,7 +286,10 @@ function (angular, app, _, L, localRequire) {
 
             layerGroup.addTo(map);
 
-            map.fitBounds(_.pluck(scope.data,'coordinates'));
+            if( scope.panel.fitboundsAuto || fitboundsFlag ) {
+              map.fitBounds(_.pluck(scope.data, 'coordinates'));
+              fitboundsFlag = false;
+            }
           });
         }
       }
